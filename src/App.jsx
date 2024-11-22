@@ -2,80 +2,94 @@ import { useEffect, useState } from "react";
 import React from "react";
 import "./App.css";
 // import MyComponent from './components/MyComponent'
+import { InputBox } from "./components";
+import useCurrencyInfo from "./hooks/useCurrencyInfo";
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [show, setShow] = useState(true);
+  const [amount, setAmount] = useState(0);
+  const [from, setFrom] = useState("usd");
+  const [to, setTo] = useState("inr");
+  const [convertedAmount, setConvertedAmount] = useState(0);
 
-  // useEffect(() => {
-  // setInterval(() => {
-  //   setShow(!show);
-  // }, 2000);
-  // }, []);
+  const currencyInfo = useCurrencyInfo(from);
+  const options = Object.keys(currencyInfo);
 
-  // return <div>{show && <MyComponent />}</div>;
+  //swapping two vars
+  const swap = () => {
+    const temp1 = from;
+    setFrom(to);
+    setTo(temp1);
+    const temp2 = convertedAmount;
+    setConvertedAmount(amount);
+    setAmount(temp2);
+  };
 
-  return<div className="text-4xl bg-cyan-300">Curency App</div>
+  //click on convert
+  const convert = () => {
+    setConvertedAmount(amount * currencyInfo[to]);
+  };
+
+  return (
+    <div
+      className="w-full h-screen flex flex-wrap justify-center items-center bg-cover bg-no-repeat"
+      style={{
+        backgroundImage: `url('https://images.pexels.com/photos/244206/pexels-photo-244206.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')`,
+      }}
+    >
+      <div className="w-full">
+        <div className="w-full max-w-md mx-auto border border-gray-60 rounded-lg p-5 backdrop-blur-sm bg-white/30">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              convert();
+            }}
+          >
+            <div className="w-full mb-1">
+              <InputBox
+                label="From"
+                amount={amount}
+                currencyOptions={options}
+                onCurrencyChange={(currency) => {
+                  setAmount(amount);
+                }}
+                selectCurrency={from}
+                onAmountChange={(amount) => {
+                  setAmount(amount);
+                }}
+              />
+            </div>
+            <div className="relative w-full h-0.5">
+              <button
+                type="button"
+                onClick={swap}
+                className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 border-2 border-white rounded-md bg-blue-600 text-white px-2 py-0.5"
+              >
+                swap
+              </button>
+            </div>
+            <div className="w-full mt-1 mb-4">
+              <InputBox
+                label="To"
+                amount={convertedAmount}
+                currencyOptions={options}
+                onCurrencyChange={(currency) => {
+                  setTo(currency);
+                }}
+                selectCurrency={to}
+                amountDisable
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg"
+            >
+              Convert {from.toUpperCase()} to {to.toUpperCase()}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-// Functional Component
-
-// function MyComponent() {
-//   useEffect(() => {
-//     // Perform setup or data fetching here
-//     console.log("component mounted");
-//     return () => {
-//       // Cleanup code (similar to componentWillUnmount)
-//       console.log("component unmounted");
-//     };
-//   }, []);
-
-//   // Render UI
-//   return <div>From inside the component</div>;
-// }
-
-
-//Class Based Component
-
-class MyComponent extends React.Component {
-  componentDidMount() {
-    // Perform setup or data fetching here
-    console.log("mounted");
-  }
-
-  componentWillUnmount() {
-    // Clean up (e.g., remove event listeners or cancel subscriptions)
-    console.log("unmounted");
-  }
-
-  render() {
-    // Render UI
-    return<div>Component</div>
-  }
-}
-
-
-
-//class based component
-
-// class MyComponent extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = { count: 0 };
-//   }
-
-//   incrementCount = () => {
-//     this.setState({ count: this.state.count + 1 });
-//   };
-
-//   render() {
-//     return (
-//       <div>
-//         <p>{this.state.count}</p>
-//         <button onClick={this.incrementCount}>Increment</button>
-//       </div>
-//     );
-//   }
-// }
 
 export default App;
